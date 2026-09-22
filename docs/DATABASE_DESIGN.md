@@ -36,3 +36,27 @@ Cardinality:
 
 ```text
 Users 1 ───── 1 UserProfiles
+
+## Entity 4: Routes
+
+The Routes entity stores the route information associated with an event.
+
+| Attribute | Data type | Key or constraint | Description |
+|---|---|---|---|
+| RouteId | INT | Primary Key | Uniquely identifies a route. |
+| EventId | INT | Foreign Key and Unique | Links the route to one event. |
+| DistanceKm | DECIMAL(6,2) | Required | Stores the route distance in kilometres. |
+| StartLatitude | DECIMAL(9,6) | Optional | Stores the latitude of the starting location. |
+| StartLongitude | DECIMAL(9,6) | Optional | Stores the longitude of the starting location. |
+| EndLatitude | DECIMAL(9,6) | Optional | Stores the latitude of the finishing location. |
+| EndLongitude | DECIMAL(9,6) | Optional | Stores the longitude of the finishing location. |
+| RouteMapUrl | NVARCHAR(500) | Optional | Stores a link to the route map. |
+
+### Events and Routes relationship
+
+Each event has one route, and each route belongs to one event.
+
+Cardinality:
+
+```text
+Events 1 ───── 1 Routes
