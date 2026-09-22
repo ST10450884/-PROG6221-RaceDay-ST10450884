@@ -88,14 +88,14 @@ erDiagram
         NVARCHAR Conditions
     }
 
-    USERS ||--|| USER_PROFILES : has
-    USERS ||--o{ EVENTS : organises
-    USERS ||--o{ ENROLMENTS : enters
-    EVENTS ||--|| ROUTES : has
-    EVENTS ||--|{ EVENT_CATEGORIES : contains
-    EVENTS ||--o{ WEATHER_SNAPSHOTS : receives
-    EVENT_CATEGORIES ||--o{ ENROLMENTS : receives
-    ENROLMENTS ||--o| RESULTS : produces
+USERS ||--|| USER_PROFILES : has
+USERS ||--o{ EVENTS : organises
+USERS ||--o{ ENROLMENTS : enters
+EVENTS ||--|| ROUTES : has
+EVENTS ||--|{ EVENT_CATEGORIES : contains
+EVENTS ||--o{ WEATHER_SNAPSHOTS : receives
+EVENT_CATEGORIES ||--o{ ENROLMENTS : receives
+ENROLMENTS ||--o| RESULTS : produces
 ```
 
 ## Relationship Summary
