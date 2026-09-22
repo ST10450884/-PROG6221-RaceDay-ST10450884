@@ -1,0 +1,68 @@
+name: Validate RaceDay Part 1
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate-part1:
+    name: Validate planning files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check required repository files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f README.md
+          test -d docs
+          test -f docs/SYSTEM_PLAN.md
+          test -f docs/DATABASE_DESIGN.md
+          test -f docs/RaceDay_ERD.md
+          test -f docs/RaceDay_ERD.png
+          test -f docs/API_ENDPOINT_PLAN.md
+          test -f docs/RaceDay_Database.sql
+
+      - name: Check required SQL tables
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          sql_file="docs/RaceDay_Database.sql"
+
+          for table in Users UserProfiles Events Routes EventCategories Enrolments Results WeatherSnapshots
+          do
+            grep -Eiq "CREATE[[:space:]]+TABLE[[:space:]]+dbo\.${table}" "$sql_file"
+          done
+
+      - name: Check SQL keys and constraints
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          sql_file="docs/RaceDay_Database.sql"
+
+          grep -Eiq "PRIMARY[[:space:]]+KEY" "$sql_file"
+          grep -Eiq "FOREIGN[[:space:]]+KEY" "$sql_file"
+          grep -Eiq "UNIQUE" "$sql_file"
+          grep -Eiq "DEFAULT" "$sql_file"
+          grep -Eiq "CHECK" "$sql_file"
+
+      - name: Check SQL sample data
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          sql_file="docs/RaceDay_Database.sql"
+
+          grep -Eiq "INSERT[[:space:]]+INTO[[:space:]]+dbo\.Users" "$sql_file"
+          grep -Eiq "INSERT[[:space:]]+INTO[[:space:]]+dbo\.Events" "$sql_file"
+          grep -Eiq "INSERT[[:space:]]+INTO[[:space:]]+dbo\.EventCategories" "$sql_file"
+          grep -Eiq "INSERT[[:space:]]+INTO[[:space:]]+dbo\.Enrolments" "$sql_file"
+
+      - name: Confirm Part 1 validation
+        run: echo "RaceDay Part 1 repository validation passed."
