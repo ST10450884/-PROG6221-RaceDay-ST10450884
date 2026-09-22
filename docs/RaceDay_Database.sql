@@ -412,3 +412,26 @@ CREATE TABLE dbo.WeatherSnapshots
         )
 );
 GO
+CREATE INDEX IX_Events_EventDate
+    ON dbo.Events(EventDate);
+GO
+
+CREATE INDEX IX_Events_OrganiserId
+    ON dbo.Events(OrganiserId);
+GO
+
+CREATE INDEX IX_EventCategories_EventId
+    ON dbo.EventCategories(EventId);
+GO
+
+CREATE INDEX IX_Enrolments_ParticipantId
+    ON dbo.Enrolments(ParticipantId);
+GO
+
+CREATE INDEX IX_Enrolments_CategoryId
+    ON dbo.Enrolments(CategoryId);
+GO
+
+CREATE INDEX IX_WeatherSnapshots_EventId_ObservedAtUtc
+    ON dbo.WeatherSnapshots(EventId, ObservedAtUtc DESC);
+GO
