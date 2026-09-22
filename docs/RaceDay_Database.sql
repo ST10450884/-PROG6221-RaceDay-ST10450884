@@ -206,3 +206,104 @@ CREATE TABLE dbo.Routes
         )
 );
 GO
+
+/* =====================================================
+   EVENT CATEGORIES TABLE
+   Stores the entry categories offered by each event.
+   ===================================================== */
+
+CREATE TABLE dbo.EventCategories
+(
+    CategoryId INT IDENTITY(1,1)
+        CONSTRAINT PK_EventCategories PRIMARY KEY,
+
+    EventId INT NOT NULL,
+
+    Name NVARCHAR(100) NOT NULL,
+
+    DistanceKm DECIMAL(6,2) NOT NULL,
+
+    Fee DECIMAL(10,2) NOT NULL
+        CONSTRAINT DF_EventCategories_Fee DEFAULT (0),
+
+    MinimumAge INT NOT NULL
+        CONSTRAINT DF_EventCategories_MinimumAge DEFAULT (0),
+
+    Capacity INT NOT NULL,
+
+    StartTime TIME(0) NOT NULL,
+
+    CONSTRAINT FK_EventCategories_Events
+        FOREIGN KEY (EventId)
+        REFERENCES dbo.Events(EventId)
+        ON DELETE CASCADE,
+
+    CONSTRAINT UQ_EventCategories_Event_Name
+        UNIQUE (EventId, Name),
+
+    CONSTRAINT CK_EventCategories_Distance
+        CHECK (DistanceKm > 0),
+
+    CONSTRAINT CK_EventCategories_Fee
+        CHECK (Fee >= 0),
+
+    CONSTRAINT CK_EventCategories_Age
+        CHECK (MinimumAge BETWEEN 0 AND 120),
+
+    CONSTRAINT CK_EventCategories_Capacity
+        CHECK (Capacity > 0)
+);
+GO
+
+/* =====================================================
+   ENROLMENTS TABLE
+   Connects participants to event categories.
+   ===================================================== */
+
+CREATE TABLE dbo.Enrolments
+(
+    EnrolmentId INT IDENTITY(1,1)
+        CONSTRAINT PK_Enrolments PRIMARY KEY,
+
+    CategoryId INT NOT NULL,
+
+    ParticipantId INT NOT NULL,
+
+    EnrolledAtUtc DATETIME2(0) NOT NULL
+        CONSTRAINT DF_Enrolments_EnrolledAtUtc
+        DEFAULT (SYSUTCDATETIME()),
+
+    Status NVARCHAR(20) NOT NULL
+        CONSTRAINT DF_Enrolments_Status DEFAULT (N'Pending'),
+
+    EmergencyContactName NVARCHAR(160) NOT NULL,
+
+    EmergencyContactPhone NVARCHAR(20) NOT NULL,
+
+    CONSTRAINT FK_Enrolments_Categories
+        FOREIGN KEY (CategoryId)
+        REFERENCES dbo.EventCategories(CategoryId),
+
+    CONSTRAINT FK_Enrolments_Users
+        FOREIGN KEY (ParticipantId)
+        REFERENCES dbo.Users(UserId),
+
+    CONSTRAINT UQ_Enrolments_Category_Participant
+        UNIQUE (CategoryId, ParticipantId),
+
+    CONSTRAINT CK_Enrolments_Status
+        CHECK
+        (
+            Status IN
+            (
+                N'Pending',
+                N'Confirmed',
+                N'Cancelled',
+                N'Disqualified'
+            )
+        ),
+
+    CONSTRAINT CK_Enrolments_EmergencyPhone
+        CHECK (EmergencyContactPhone LIKE N'+27%')
+);
+GO
