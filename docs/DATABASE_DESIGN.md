@@ -60,3 +60,26 @@ Cardinality:
 
 ```text
 Events 1 ───── 1 Routes
+
+## Entity 6: Enrolments
+
+The Enrolments entity records participants entering specific event categories.
+
+| Attribute | Data type | Key or constraint | Description |
+|---|---|---|---|
+| EnrolmentId | INT | Primary Key | Uniquely identifies an enrolment. |
+| CategoryId | INT | Foreign Key | Links the enrolment to an event category. |
+| ParticipantId | INT | Foreign Key | Links the enrolment to a participant user. |
+| EnrolledAtUtc | DATETIME2 | Required | Records when the participant enrolled. |
+| Status | NVARCHAR(20) | Required | Stores Pending, Confirmed, Cancelled or Disqualified. |
+| EmergencyContactName | NVARCHAR(160) | Required | Stores the participant's emergency contact name. |
+| EmergencyContactPhone | NVARCHAR(20) | Required | Stores the emergency contact number. |
+
+### EventCategories and Enrolments relationship
+
+One event category can have many enrolments, but each enrolment belongs to one category.
+
+Cardinality:
+
+```text
+EventCategories 1 ───── M Enrolments
