@@ -1,6 +1,6 @@
 # RaceDay API Endpoint Plan
 
-This document defines the RESTful API endpoints planned for the RaceDay system.
+This document defines the RESTful API endpoints planned for the RaceDay system. ASP.NET Core supports the development of RESTful web APIs using controller classes that handle HTTP requests and responses (Microsoft, 2026a).
 
 All routes begin with `/api` and use JSON for request and response bodies.
 
@@ -81,6 +81,8 @@ All routes begin with `/api` and use JSON for request and response bodies.
 | POST | `/api/events/{eventId}/weather/refresh` | Retrieves and stores updated weather information for an event owned by the logged-in organiser. | Organiser | None | `200 OK` with the refreshed weather information. `401 Unauthorized` when the user is not logged in. `403 Forbidden` when the organiser does not own the event. `404 Not Found` when the event does not exist. `503 Service Unavailable` when the weather service cannot be reached. |
 
 ## API Design and Security Rules
+
+Authentication and authorisation will be implemented using ASP.NET Core security features to protect API resources and enforce role-based access (Microsoft, 2026b).
 
 The RaceDay API implementation in Part 2 must follow these rules:
 

@@ -1,6 +1,6 @@
 # RaceDay Database Design
 
-This document defines the entities, attributes, keys and relationships planned for the RaceDay relational database.
+This document defines the entities, attributes, keys and relationships planned for the RaceDay relational database. Primary and foreign keys help enforce integrity and establish relationships between SQL Server tables (Microsoft, 2025a). Relational database relationships are represented through foreign keys that connect dependent and principal records (Microsoft, 2023).
 
 ## Entity 1: Users
 
