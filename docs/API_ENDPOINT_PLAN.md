@@ -79,3 +79,28 @@ All routes begin with `/api` and use JSON for request and response bodies.
 |---|---|---|---|---|---|
 | GET | `/api/events/{eventId}/weather` | Returns the latest stored weather information for a specific event. | Public | None | `200 OK` with the latest weather snapshot. `404 Not Found` when the event or weather information does not exist. `503 Service Unavailable` when the external weather service is unavailable. |
 | POST | `/api/events/{eventId}/weather/refresh` | Retrieves and stores updated weather information for an event owned by the logged-in organiser. | Organiser | None | `200 OK` with the refreshed weather information. `401 Unauthorized` when the user is not logged in. `403 Forbidden` when the organiser does not own the event. `404 Not Found` when the event does not exist. `503 Service Unavailable` when the weather service cannot be reached. |
+
+## API Design and Security Rules
+
+The RaceDay API implementation in Part 2 must follow these rules:
+
+1. All API routes must begin with `/api`.
+2. Resource names must use plural nouns, such as `/events` and `/enrolments`.
+3. Request and response information must use JSON.
+4. All incoming request bodies must be validated.
+5. Invalid request information must return `400 Bad Request` with clear validation messages.
+6. Protected endpoints must require a valid authentication token.
+7. Missing or invalid authentication must return `401 Unauthorized`.
+8. A logged-in user attempting an action outside their role must receive `403 Forbidden`.
+9. Organisers may modify only events they own.
+10. Participants may view and cancel only their own enrolments.
+11. Participants may view only their own private performance history.
+12. Public endpoints must expose only information suitable for unauthenticated users.
+13. Password hashes must never be included in API responses.
+14. Passwords must be securely hashed using ASP.NET Core Identity or an equivalent secure password hasher.
+15. Requests for records that do not exist must return `404 Not Found`.
+16. Duplicate enrolments and other uniqueness violations must return `409 Conflict`.
+17. Successful resource creation must return `201 Created`.
+18. Successful deletion must return `204 No Content`.
+19. Role-based access control must be enforced by the API and not only by the MVC interface.
+20. The implemented API in Part 2 must closely follow this endpoint plan. Any necessary changes must be explained in the README.
