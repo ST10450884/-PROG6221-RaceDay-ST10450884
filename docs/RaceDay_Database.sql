@@ -843,3 +843,49 @@ INNER JOIN dbo.Events AS e
     ON e.EventId = w.EventId
 ORDER BY e.EventId;
 GO
+
+/* =====================================================
+   FINAL DATABASE VERIFICATION
+   Confirms the required tables and sample records.
+   ===================================================== */
+
+SELECT
+    TABLE_NAME AS RequiredTable
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA = 'dbo'
+  AND TABLE_TYPE = 'BASE TABLE'
+ORDER BY TABLE_NAME;
+GO
+
+SELECT
+    Role,
+    COUNT(*) AS NumberOfUsers
+FROM dbo.Users
+GROUP BY Role
+ORDER BY Role;
+GO
+
+SELECT
+    (SELECT COUNT(*) FROM dbo.Users) AS TotalUsers,
+    (SELECT COUNT(*) FROM dbo.Events) AS TotalEvents,
+    (SELECT COUNT(*) FROM dbo.Routes) AS TotalRoutes,
+    (SELECT COUNT(*) FROM dbo.EventCategories) AS TotalCategories,
+    (SELECT COUNT(*) FROM dbo.Enrolments) AS TotalEnrolments,
+    (SELECT COUNT(*) FROM dbo.Results) AS TotalResults,
+    (SELECT COUNT(*) FROM dbo.WeatherSnapshots) AS TotalWeatherSnapshots;
+GO
+
+SELECT
+    e.Name AS EventName,
+    COUNT(c.CategoryId) AS NumberOfCategories
+FROM dbo.Events AS e
+LEFT JOIN dbo.EventCategories AS c
+    ON c.EventId = e.EventId
+GROUP BY
+    e.EventId,
+    e.Name
+ORDER BY e.EventId;
+GO
+
+PRINT N'RaceDayDB created and populated successfully.';
+GO
