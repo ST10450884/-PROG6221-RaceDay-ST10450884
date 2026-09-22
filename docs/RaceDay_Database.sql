@@ -703,3 +703,143 @@ INNER JOIN dbo.EventCategories AS c
     ON c.EventId = e.EventId
 ORDER BY e.EventId, c.CategoryId;
 GO
+
+/* =====================================================
+   SAMPLE ENROLMENT DATA
+   Participants enter selected event categories.
+   ===================================================== */
+
+INSERT INTO dbo.Enrolments
+(
+    CategoryId,
+    ParticipantId,
+    Status,
+    EmergencyContactName,
+    EmergencyContactPhone
+)
+VALUES
+(
+    1,
+    3,
+    N'Confirmed',
+    N'Kabelo Mokoena',
+    N'+27831112222'
+),
+(
+    3,
+    4,
+    N'Confirmed',
+    N'Zanele Nkosi',
+    N'+27834445555'
+),
+(
+    5,
+    3,
+    N'Pending',
+    N'Kabelo Mokoena',
+    N'+27831112222'
+);
+GO
+/* =====================================================
+   SAMPLE RESULT DATA
+   Results are linked to participant enrolments.
+   ===================================================== */
+
+INSERT INTO dbo.Results
+(
+    EnrolmentId,
+    FinishTimeSeconds,
+    OverallPosition,
+    CategoryPosition,
+    Status
+)
+VALUES
+(
+    1,
+    3210,
+    87,
+    63,
+    N'Finished'
+),
+(
+    2,
+    4380,
+    102,
+    102,
+    N'Finished'
+);
+GO
+/* =====================================================
+   SAMPLE WEATHER DATA
+   One weather snapshot for each event.
+   ===================================================== */
+
+INSERT INTO dbo.WeatherSnapshots
+(
+    EventId,
+    ObservedAtUtc,
+    TemperatureC,
+    WindSpeedKph,
+    PrecipitationChance,
+    Conditions
+)
+VALUES
+(
+    1,
+    '2027-09-17T06:30:00',
+    16.50,
+    8.20,
+    10,
+    N'Clear'
+),
+(
+    2,
+    '2027-10-08T07:00:00',
+    18.00,
+    10.00,
+    20,
+    N'Partly cloudy'
+),
+(
+    3,
+    '2027-11-13T05:45:00',
+    17.20,
+    22.50,
+    15,
+    N'Breezy'
+);
+GO
+SELECT
+    en.EnrolmentId,
+    u.Email AS ParticipantEmail,
+    e.Name AS EventName,
+    c.Name AS CategoryName,
+    en.Status AS EnrolmentStatus,
+    rs.FinishTimeSeconds,
+    rs.OverallPosition,
+    rs.CategoryPosition,
+    rs.Status AS ResultStatus
+FROM dbo.Enrolments AS en
+INNER JOIN dbo.Users AS u
+    ON u.UserId = en.ParticipantId
+INNER JOIN dbo.EventCategories AS c
+    ON c.CategoryId = en.CategoryId
+INNER JOIN dbo.Events AS e
+    ON e.EventId = c.EventId
+LEFT JOIN dbo.Results AS rs
+    ON rs.EnrolmentId = en.EnrolmentId
+ORDER BY en.EnrolmentId;
+GO
+
+SELECT
+    e.Name AS EventName,
+    w.ObservedAtUtc,
+    w.TemperatureC,
+    w.WindSpeedKph,
+    w.PrecipitationChance,
+    w.Conditions
+FROM dbo.WeatherSnapshots AS w
+INNER JOIN dbo.Events AS e
+    ON e.EventId = w.EventId
+ORDER BY e.EventId;
+GO
