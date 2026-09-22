@@ -83,3 +83,26 @@ Cardinality:
 
 ```text
 EventCategories 1 ───── M Enrolments
+
+## Entity 8: WeatherSnapshots
+
+The WeatherSnapshots entity stores weather information collected for an event. Multiple snapshots may be stored as the event date approaches.
+
+| Attribute | Data type | Key or constraint | Description |
+|---|---|---|---|
+| WeatherSnapshotId | INT | Primary Key | Uniquely identifies a weather snapshot. |
+| EventId | INT | Foreign Key | Links the weather information to an event. |
+| ObservedAtUtc | DATETIME2 | Required | Records when the weather data was collected. |
+| TemperatureC | DECIMAL(5,2) | Optional | Stores the temperature in degrees Celsius. |
+| WindSpeedKph | DECIMAL(6,2) | Optional | Stores the wind speed in kilometres per hour. |
+| PrecipitationChance | TINYINT | Optional | Stores the chance of rain as a percentage. |
+| Conditions | NVARCHAR(100) | Optional | Describes the expected weather conditions. |
+
+### Events and WeatherSnapshots relationship
+
+One event can have many weather snapshots, but every weather snapshot belongs to one event.
+
+Cardinality:
+
+```text
+Events 1 ───── M WeatherSnapshots
