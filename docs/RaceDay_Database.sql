@@ -435,3 +435,90 @@ GO
 CREATE INDEX IX_WeatherSnapshots_EventId_ObservedAtUtc
     ON dbo.WeatherSnapshots(EventId, ObservedAtUtc DESC);
 GO
+
+/* =====================================================
+   SAMPLE USER DATA
+   Two organisers and two participants.
+   Password values are demonstration placeholders only.
+   Part 2 must generate secure password hashes.
+   ===================================================== */
+
+INSERT INTO dbo.Users
+(
+    Email,
+    PasswordHash,
+    Role
+)
+VALUES
+(
+    N'nomsa@raceday.co.za',
+    N'DEMO_HASH_REPLACE_IN_PART2',
+    N'Organiser'
+),
+(
+    N'pieter@raceday.co.za',
+    N'DEMO_HASH_REPLACE_IN_PART2',
+    N'Organiser'
+),
+(
+    N'lerato@example.com',
+    N'DEMO_HASH_REPLACE_IN_PART2',
+    N'Participant'
+),
+(
+    N'thabo@example.com',
+    N'DEMO_HASH_REPLACE_IN_PART2',
+    N'Participant'
+);
+GO
+
+INSERT INTO dbo.UserProfiles
+(
+    UserId,
+    FirstName,
+    LastName,
+    PhoneNumber,
+    DateOfBirth
+)
+VALUES
+(
+    1,
+    N'Nomsa',
+    N'Dlamini',
+    N'+27821234567',
+    '1988-05-14'
+),
+(
+    2,
+    N'Pieter',
+    N'Van Wyk',
+    N'+27829876543',
+    '1982-09-21'
+),
+(
+    3,
+    N'Lerato',
+    N'Mokoena',
+    N'+27711223344',
+    '1998-02-11'
+),
+(
+    4,
+    N'Thabo',
+    N'Nkosi',
+    N'+27725556677',
+    '1994-07-03'
+);
+GO
+SELECT
+    u.UserId,
+    u.Email,
+    u.Role,
+    p.FirstName,
+    p.LastName,
+    p.PhoneNumber
+FROM dbo.Users AS u
+INNER JOIN dbo.UserProfiles AS p
+    ON p.UserId = u.UserId
+ORDER BY u.UserId;
+GO
