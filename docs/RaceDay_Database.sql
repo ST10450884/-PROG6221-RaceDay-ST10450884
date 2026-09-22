@@ -522,3 +522,184 @@ INNER JOIN dbo.UserProfiles AS p
     ON p.UserId = u.UserId
 ORDER BY u.UserId;
 GO
+
+/* =====================================================
+   SAMPLE EVENT DATA
+   Three South African community events.
+   ===================================================== */
+
+INSERT INTO dbo.Events
+(
+    OrganiserId,
+    Name,
+    Description,
+    EventType,
+    EventDate,
+    Venue,
+    City,
+    Province,
+    RegistrationCloseDate,
+    MaxParticipants,
+    Status
+)
+VALUES
+(
+    1,
+    N'Pretoria Spring Road Race',
+    N'A community road-running event through central Pretoria.',
+    N'Running',
+    '2027-09-18T06:30:00',
+    N'Union Buildings',
+    N'Pretoria',
+    N'Gauteng',
+    '2027-09-11T23:59:59',
+    1200,
+    N'Published'
+),
+(
+    1,
+    N'Soweto Family Walk',
+    N'A community walking event suitable for families.',
+    N'Walking',
+    '2027-10-09T07:00:00',
+    N'Orlando Stadium',
+    N'Soweto',
+    N'Gauteng',
+    '2027-10-02T23:59:59',
+    800,
+    N'Published'
+),
+(
+    2,
+    N'Cape Peninsula Cycle Challenge',
+    N'A scenic road-cycling event around the Cape Peninsula.',
+    N'Cycling',
+    '2027-11-14T05:45:00',
+    N'Green Point Park',
+    N'Cape Town',
+    N'Western Cape',
+    '2027-11-01T23:59:59',
+    1500,
+    N'Published'
+);
+GO
+INSERT INTO dbo.Routes
+(
+    EventId,
+    DistanceKm,
+    StartLatitude,
+    StartLongitude,
+    EndLatitude,
+    EndLongitude,
+    RouteMapUrl
+)
+VALUES
+(
+    1,
+    10.00,
+    -25.740300,
+    28.212100,
+    -25.740300,
+    28.212100,
+    N'https://example.org/routes/pretoria-race'
+),
+(
+    2,
+    5.00,
+    -26.231100,
+    27.922800,
+    -26.231100,
+    27.922800,
+    N'https://example.org/routes/soweto-walk'
+),
+(
+    3,
+    109.00,
+    -33.906800,
+    18.411300,
+    -33.906800,
+    18.411300,
+    N'https://example.org/routes/cape-cycle'
+);
+GO
+INSERT INTO dbo.EventCategories
+(
+    EventId,
+    Name,
+    DistanceKm,
+    Fee,
+    MinimumAge,
+    Capacity,
+    StartTime
+)
+VALUES
+(
+    1,
+    N'Open 10K',
+    10.00,
+    180.00,
+    16,
+    900,
+    '06:30:00'
+),
+(
+    1,
+    N'Junior 5K',
+    5.00,
+    90.00,
+    10,
+    300,
+    '07:00:00'
+),
+(
+    2,
+    N'Family 5K',
+    5.00,
+    75.00,
+    0,
+    600,
+    '07:00:00'
+),
+(
+    2,
+    N'Community 10K Walk',
+    10.00,
+    120.00,
+    12,
+    200,
+    '06:45:00'
+),
+(
+    3,
+    N'Open 109K',
+    109.00,
+    650.00,
+    18,
+    1200,
+    '05:45:00'
+),
+(
+    3,
+    N'Relay Team',
+    109.00,
+    900.00,
+    16,
+    300,
+    '06:00:00'
+);
+GO
+SELECT
+    e.EventId,
+    e.Name AS EventName,
+    e.EventType,
+    r.DistanceKm AS RouteDistance,
+    c.Name AS CategoryName,
+    c.DistanceKm AS CategoryDistance,
+    c.Fee
+FROM dbo.Events AS e
+INNER JOIN dbo.Routes AS r
+    ON r.EventId = e.EventId
+INNER JOIN dbo.EventCategories AS c
+    ON c.EventId = e.EventId
+ORDER BY e.EventId, c.CategoryId;
+GO
