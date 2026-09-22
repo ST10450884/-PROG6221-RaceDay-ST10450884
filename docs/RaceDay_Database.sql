@@ -79,3 +79,130 @@ CREATE TABLE dbo.UserProfiles
         )
 );
 GO
+
+/* =====================================================
+   EVENTS TABLE
+   Stores running, walking and cycling events.
+   ===================================================== */
+
+CREATE TABLE dbo.Events
+(
+    EventId INT IDENTITY(1,1)
+        CONSTRAINT PK_Events PRIMARY KEY,
+
+    OrganiserId INT NOT NULL,
+
+    Name NVARCHAR(150) NOT NULL,
+
+    Description NVARCHAR(1000) NULL,
+
+    EventType NVARCHAR(20) NOT NULL,
+
+    EventDate DATETIME2(0) NOT NULL,
+
+    Venue NVARCHAR(150) NOT NULL,
+
+    City NVARCHAR(100) NOT NULL,
+
+    Province NVARCHAR(50) NOT NULL,
+
+    RegistrationCloseDate DATETIME2(0) NOT NULL,
+
+    MaxParticipants INT NOT NULL,
+
+    Status NVARCHAR(20) NOT NULL
+        CONSTRAINT DF_Events_Status DEFAULT (N'Draft'),
+
+    CreatedAtUtc DATETIME2(0) NOT NULL
+        CONSTRAINT DF_Events_CreatedAtUtc
+        DEFAULT (SYSUTCDATETIME()),
+
+    CONSTRAINT FK_Events_Users
+        FOREIGN KEY (OrganiserId)
+        REFERENCES dbo.Users(UserId),
+
+    CONSTRAINT CK_Events_Type
+        CHECK
+        (
+            EventType IN
+            (
+                N'Running',
+                N'Walking',
+                N'Cycling'
+            )
+        ),
+
+    CONSTRAINT CK_Events_Status
+        CHECK
+        (
+            Status IN
+            (
+                N'Draft',
+                N'Published',
+                N'Completed',
+                N'Cancelled'
+            )
+        ),
+
+    CONSTRAINT CK_Events_MaxParticipants
+        CHECK (MaxParticipants > 0),
+
+    CONSTRAINT CK_Events_RegistrationDate
+        CHECK (RegistrationCloseDate < EventDate)
+);
+GO
+
+/* =====================================================
+   ROUTES TABLE
+   Stores the route associated with each event.
+   ===================================================== */
+
+CREATE TABLE dbo.Routes
+(
+    RouteId INT IDENTITY(1,1)
+        CONSTRAINT PK_Routes PRIMARY KEY,
+
+    EventId INT NOT NULL
+        CONSTRAINT UQ_Routes_EventId UNIQUE,
+
+    DistanceKm DECIMAL(6,2) NOT NULL,
+
+    StartLatitude DECIMAL(9,6) NULL,
+
+    StartLongitude DECIMAL(9,6) NULL,
+
+    EndLatitude DECIMAL(9,6) NULL,
+
+    EndLongitude DECIMAL(9,6) NULL,
+
+    RouteMapUrl NVARCHAR(500) NULL,
+
+    CONSTRAINT FK_Routes_Events
+        FOREIGN KEY (EventId)
+        REFERENCES dbo.Events(EventId)
+        ON DELETE CASCADE,
+
+    CONSTRAINT CK_Routes_Distance
+        CHECK (DistanceKm > 0),
+
+    CONSTRAINT CK_Routes_Latitude
+        CHECK
+        (
+            (StartLatitude IS NULL
+                OR StartLatitude BETWEEN -90 AND 90)
+            AND
+            (EndLatitude IS NULL
+                OR EndLatitude BETWEEN -90 AND 90)
+        ),
+
+    CONSTRAINT CK_Routes_Longitude
+        CHECK
+        (
+            (StartLongitude IS NULL
+                OR StartLongitude BETWEEN -180 AND 180)
+            AND
+            (EndLongitude IS NULL
+                OR EndLongitude BETWEEN -180 AND 180)
+        )
+);
+GO
