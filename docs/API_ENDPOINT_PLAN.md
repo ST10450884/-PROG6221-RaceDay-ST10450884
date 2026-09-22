@@ -65,3 +65,17 @@ All routes begin with `/api` and use JSON for request and response bodies.
 | PUT | `/api/enrolments/{enrolmentId}/result` | Updates an existing result for an enrolment in an event owned by the logged-in organiser. | Organiser | `{ finishTimeSeconds, overallPosition, categoryPosition, status }` | `200 OK` with the updated result. `400 Bad Request` for invalid information. `401 Unauthorized` when the user is not logged in. `403 Forbidden` when the organiser does not own the event. `404 Not Found` when the enrolment or result does not exist. |
 | GET | `/api/events/{eventId}/results` | Returns the published results for a specific event. | Public | None | `200 OK` with the event results. `404 Not Found` when the event does not exist. |
 | GET | `/api/results/me` | Returns the personal result history of the logged-in participant. | Participant | None | `200 OK` with the participant's results. `401 Unauthorized` when the user is not logged in. `403 Forbidden` when the user is not a participant. |
+
+## Route Endpoints
+
+| HTTP method | Route | Description | Role required | Request body | Expected response |
+|---|---|---|---|---|---|
+| GET | `/api/events/{eventId}/route` | Returns the route and map information for a specific event. | Public | None | `200 OK` with the route details. `404 Not Found` when the event or route does not exist. |
+| PUT | `/api/events/{eventId}/route` | Creates or updates route information for an event owned by the logged-in organiser. | Organiser | `{ distanceKm, startLatitude, startLongitude, endLatitude, endLongitude, routeMapUrl }` | `200 OK` with the saved route. `400 Bad Request` for invalid information. `401 Unauthorized` when the user is not logged in. `403 Forbidden` when the organiser does not own the event. `404 Not Found` when the event does not exist. |
+
+## Weather Endpoints
+
+| HTTP method | Route | Description | Role required | Request body | Expected response |
+|---|---|---|---|---|---|
+| GET | `/api/events/{eventId}/weather` | Returns the latest stored weather information for a specific event. | Public | None | `200 OK` with the latest weather snapshot. `404 Not Found` when the event or weather information does not exist. `503 Service Unavailable` when the external weather service is unavailable. |
+| POST | `/api/events/{eventId}/weather/refresh` | Retrieves and stores updated weather information for an event owned by the logged-in organiser. | Organiser | None | `200 OK` with the refreshed weather information. `401 Unauthorized` when the user is not logged in. `403 Forbidden` when the organiser does not own the event. `404 Not Found` when the event does not exist. `503 Service Unavailable` when the weather service cannot be reached. |
