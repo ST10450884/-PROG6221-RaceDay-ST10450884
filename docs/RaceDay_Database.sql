@@ -307,3 +307,108 @@ CREATE TABLE dbo.Enrolments
         CHECK (EmergencyContactPhone LIKE N'+27%')
 );
 GO
+
+/* =====================================================
+   RESULTS TABLE
+   Stores the official result for an enrolment.
+   ===================================================== */
+
+CREATE TABLE dbo.Results
+(
+    ResultId INT IDENTITY(1,1)
+        CONSTRAINT PK_Results PRIMARY KEY,
+
+    EnrolmentId INT NOT NULL
+        CONSTRAINT UQ_Results_EnrolmentId UNIQUE,
+
+    FinishTimeSeconds INT NULL,
+
+    OverallPosition INT NULL,
+
+    CategoryPosition INT NULL,
+
+    Status NVARCHAR(20) NOT NULL
+        CONSTRAINT DF_Results_Status DEFAULT (N'Finished'),
+
+    RecordedAtUtc DATETIME2(0) NOT NULL
+        CONSTRAINT DF_Results_RecordedAtUtc
+        DEFAULT (SYSUTCDATETIME()),
+
+    CONSTRAINT FK_Results_Enrolments
+        FOREIGN KEY (EnrolmentId)
+        REFERENCES dbo.Enrolments(EnrolmentId),
+
+    CONSTRAINT CK_Results_Time
+        CHECK
+        (
+            FinishTimeSeconds IS NULL
+            OR FinishTimeSeconds > 0
+        ),
+
+    CONSTRAINT CK_Results_Positions
+        CHECK
+        (
+            (OverallPosition IS NULL OR OverallPosition > 0)
+            AND
+            (CategoryPosition IS NULL OR CategoryPosition > 0)
+        ),
+
+    CONSTRAINT CK_Results_Status
+        CHECK
+        (
+            Status IN
+            (
+                N'Finished',
+                N'DNF',
+                N'DNS',
+                N'Disqualified'
+            )
+        )
+);
+GO
+
+/* =====================================================
+   WEATHER SNAPSHOTS TABLE
+   Stores weather information collected for each event.
+   ===================================================== */
+
+CREATE TABLE dbo.WeatherSnapshots
+(
+    WeatherSnapshotId INT IDENTITY(1,1)
+        CONSTRAINT PK_WeatherSnapshots PRIMARY KEY,
+
+    EventId INT NOT NULL,
+
+    ObservedAtUtc DATETIME2(0) NOT NULL,
+
+    TemperatureC DECIMAL(5,2) NULL,
+
+    WindSpeedKph DECIMAL(6,2) NULL,
+
+    PrecipitationChance TINYINT NULL,
+
+    Conditions NVARCHAR(100) NULL,
+
+    CONSTRAINT FK_WeatherSnapshots_Events
+        FOREIGN KEY (EventId)
+        REFERENCES dbo.Events(EventId)
+        ON DELETE CASCADE,
+
+    CONSTRAINT UQ_WeatherSnapshots_Event_Observed
+        UNIQUE (EventId, ObservedAtUtc),
+
+    CONSTRAINT CK_WeatherSnapshots_Precipitation
+        CHECK
+        (
+            PrecipitationChance IS NULL
+            OR PrecipitationChance BETWEEN 0 AND 100
+        ),
+
+    CONSTRAINT CK_WeatherSnapshots_Wind
+        CHECK
+        (
+            WindSpeedKph IS NULL
+            OR WindSpeedKph >= 0
+        )
+);
+GO
